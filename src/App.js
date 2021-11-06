@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import idl from './idl.json';
 import kp from './keypair.json'
 import twitterLogo from './assets/twitter-logo.svg';
+import validator from 'validator'
 import './App.css';
 import { Connection, PublicKey, clusterApiUrl} from '@solana/web3.js';
 import {
@@ -78,8 +79,9 @@ const App = () => {
   };
 
   const sendGif = async () => {
-    if (inputValue.length === 0) {
-      console.log("No gif link given!")
+    if (inputValue.length === 0 || !validator.isURL(inputValue)) {
+      console.log("Invalid gif link given!");
+      setInputValue('');
       return
     }
     console.log('Gif link:', inputValue);
@@ -92,7 +94,8 @@ const App = () => {
           baseAccount: baseAccount.publicKey,
         },
       });
-      console.log("GIF sucesfully sent to program", inputValue)
+      console.log("GIF sucesfully sent to program", inputValue);
+      setInputValue('');
   
       await getGifList();
     } catch (error) {
@@ -171,6 +174,7 @@ const App = () => {
             {gifList.map((item, index) => (
               <div className="gif-item" key={index}>
                 <img src={item.gifLink} alt={"GIF from " + item.userAddress.toString()} />
+                <h3 style={{ color: 'white' }}>{"GIF from " + item.userAddress.toString()}</h3>
               </div>
             ))}
           </div>
